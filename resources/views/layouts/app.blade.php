@@ -22,7 +22,7 @@
             <!-- Navigation (Desktop) -->
             <nav class="hidden md:flex gap-8 font-semibold text-[15px]">
                 <a href="/" class="{{ request()->is('/') ? 'text-primary underline underline-offset-8 decoration-2' : 'text-gray-600 hover:text-primary transition-colors' }}">Home</a>
-                <a href="#" class="{{ request()->is('match*') ? 'text-primary underline underline-offset-8 decoration-2' : 'text-gray-600 hover:text-primary transition-colors' }}">Match</a>
+                <a href="/match" class="{{ request()->is('match*') ? 'text-primary underline underline-offset-8 decoration-2' : 'text-gray-600 hover:text-primary transition-colors' }}">Match</a>
                 <a href="/news" class="{{ request()->is('news*') ? 'text-primary underline underline-offset-8 decoration-2' : 'text-gray-600 hover:text-primary transition-colors' }}">News</a>
             </nav>
 
@@ -36,7 +36,7 @@
         <div id="mobile-menu" class="hidden md:hidden absolute left-0 w-full top-full bg-white border-t border-gray-100 shadow-xl">
             <nav class="flex flex-col px-6 py-6 gap-5 font-semibold text-[15px]">
                 <a href="/" class="{{ request()->is('/') ? 'text-primary underline underline-offset-4 decoration-2' : 'text-gray-600 hover:text-primary transition-colors' }}">Home</a>
-                <a href="#" class="{{ request()->is('match*') ? 'text-primary underline underline-offset-4 decoration-2' : 'text-gray-600 hover:text-primary transition-colors' }}">Match</a>
+                <a href="/match" class="{{ request()->is('match*') ? 'text-primary underline underline-offset-4 decoration-2' : 'text-gray-600 hover:text-primary transition-colors' }}">Match</a>
                 <a href="/news" class="{{ request()->is('news*') ? 'text-primary underline underline-offset-4 decoration-2' : 'text-gray-600 hover:text-primary transition-colors' }}">News</a>
             </nav>
         </div>
@@ -127,5 +127,6 @@
             }
         });
     </script>
+    @stack('scripts')
 </body>
 </html>

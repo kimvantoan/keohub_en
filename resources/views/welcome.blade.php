@@ -118,108 +118,101 @@
 </div>
 
 <!-- Table Standings Section -->
-<div class="mt-16 mb-20">
-    <div class="bg-[#f4f6f8] rounded-3xl p-4 sm:p-6 md:p-10 border border-gray-100 shadow-inner">
+<div id="standings" class="mt-16 mb-20 scroll-mt-24 relative">
+    <div class="bg-[#f4f6f8] rounded-2xl md:rounded-3xl p-2 sm:p-6 md:p-10 border border-gray-100 shadow-inner overflow-hidden relative">
         <!-- Header & Tabs -->
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 md:mb-8 gap-4 md:gap-6">
-            <h2 class="text-xl md:text-3xl font-black text-secondary font-outfit uppercase tracking-tight">Premier League Standings</h2>
+        <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-4 md:mb-8 gap-4 md:gap-6 px-2 md:px-0 relative z-20">
+            <h2 id="standings-title" class="text-xl md:text-3xl font-black text-secondary font-outfit uppercase tracking-tight">{{ $currentLeagueName ?? 'Premier League' }}</h2>
             
-            <div class="flex items-center gap-1 sm:gap-2 bg-gray-200/50 p-1 rounded-full w-full justify-center md:w-auto">
-                <button class="px-4 py-1.5 sm:px-5 sm:py-2 bg-secondary text-white text-xs sm:text-sm font-bold rounded-full shadow-sm flex-1 md:flex-none">PL</button>
-                <button class="px-3 py-1.5 sm:px-5 sm:py-2 text-gray-500 hover:text-secondary text-xs sm:text-sm font-bold rounded-full transition-colors flex-1 md:flex-none">La Liga</button>
-                <button class="px-3 py-1.5 sm:px-5 sm:py-2 text-gray-500 hover:text-secondary text-xs sm:text-sm font-bold rounded-full transition-colors flex-1 md:flex-none">UCL</button>
+            <div class="flex flex-wrap items-center gap-1 sm:gap-2 bg-gray-200/50 p-1 rounded-3xl w-full lg:w-auto justify-center" id="standings-tabs">
+                @php
+                    $shortNames = [
+                        'PL' => 'PL',
+                        'PD' => 'La Liga',
+                        'SA' => 'Serie A',
+                        'BL1' => 'Bundes',
+                        'FL1' => 'Ligue 1'
+                    ];
+                    $leaguesToDisplay = $allowedLeagues ?? $shortNames;
+                @endphp
+                @foreach($leaguesToDisplay as $code => $name)
+                    <a href="?league={{ $code }}" data-league="{{ $code }}" class="league-tab px-2 py-1.5 sm:px-4 sm:py-2 text-[10px] sm:text-sm font-bold rounded-full transition-colors flex-1 md:flex-none text-center whitespace-nowrap {{ (isset($currentLeagueCode) && $currentLeagueCode === $code) ? 'bg-secondary text-white shadow-sm' : 'text-gray-500 hover:text-secondary' }}">
+                        {{ $shortNames[$code] ?? $code }}
+                    </a>
+                @endforeach
             </div>
         </div>
 
-        <!-- Table Container -->
-        <div class="bg-white rounded-2xl shadow-sm overflow-x-auto border border-gray-50">
-            <table class="w-full text-left font-sans min-w-[700px]">
-                <thead>
-                    <tr class="text-gray-400 text-xs font-bold uppercase tracking-wider border-b border-gray-100">
-                        <th class="py-5 px-6 w-16 text-center">Pos</th>
-                        <th class="py-5 px-4">Club</th>
-                        <th class="py-5 px-4 text-center">Pl</th>
-                        <th class="py-5 px-4 text-center">Gd</th>
-                        <th class="py-5 px-4 text-center">Pts</th>
-                        <th class="py-5 px-6 text-center">Form</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-50 text-secondary">
-                    <!-- Row 1 -->
-                    <tr class="hover:bg-gray-50 transition-colors">
-                        <td class="py-5 px-6 text-center text-xl font-black font-outfit relative">
-                            <!-- Left Green Border -->
-                            <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-primary rounded-l-2xl"></div>
-                            1
-                        </td>
-                        <td class="py-5 px-4">
-                            <div class="flex items-center gap-4">
-                                <span class="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-500 border border-gray-200 shadow-sm">MC</span>
-                                <span class="font-bold text-lg">Manchester City</span>
-                            </div>
-                        </td>
-                        <td class="py-5 px-4 text-center font-medium text-gray-500">12</td>
-                        <td class="py-5 px-4 text-center font-bold text-primary">+18</td>
-                        <td class="py-5 px-4 text-center text-2xl font-black font-outfit">30</td>
-                        <td class="py-5 px-6">
-                            <div class="flex items-center justify-center gap-1.5">
-                                <span class="w-2.5 h-2.5 rounded-full bg-primary"></span>
-                                <span class="w-2.5 h-2.5 rounded-full bg-primary"></span>
-                                <span class="w-2.5 h-2.5 rounded-full bg-primary"></span>
-                                <span class="w-2.5 h-2.5 rounded-full bg-gray-300"></span>
-                                <span class="w-2.5 h-2.5 rounded-full bg-primary"></span>
-                            </div>
-                        </td>
-                    </tr>
-                    
-                    <!-- Row 2 -->
-                    <tr class="hover:bg-gray-50 transition-colors relative">
-                        <td class="py-5 px-6 text-center text-xl font-black font-outfit">2</td>
-                        <td class="py-5 px-4">
-                            <div class="flex items-center gap-4">
-                                <span class="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-500 border border-gray-200 shadow-sm">ARS</span>
-                                <span class="font-bold text-lg">Arsenal</span>
-                            </div>
-                        </td>
-                        <td class="py-5 px-4 text-center font-medium text-gray-500">12</td>
-                        <td class="py-5 px-4 text-center font-bold text-primary">+15</td>
-                        <td class="py-5 px-4 text-center text-2xl font-black font-outfit">28</td>
-                        <td class="py-5 px-6">
-                            <div class="flex items-center justify-center gap-1.5">
-                                <span class="w-2.5 h-2.5 rounded-full bg-primary"></span>
-                                <span class="w-2.5 h-2.5 rounded-full bg-red-500"></span>
-                                <span class="w-2.5 h-2.5 rounded-full bg-primary"></span>
-                                <span class="w-2.5 h-2.5 rounded-full bg-primary"></span>
-                                <span class="w-2.5 h-2.5 rounded-full bg-primary"></span>
-                            </div>
-                        </td>
-                    </tr>
-                    
-                    <!-- Row 3 -->
-                    <tr class="hover:bg-gray-50 transition-colors relative">
-                        <td class="py-5 px-6 text-center text-xl font-black font-outfit">3</td>
-                        <td class="py-5 px-4">
-                            <div class="flex items-center gap-4">
-                                <span class="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-500 border border-gray-200 shadow-sm">LFC</span>
-                                <span class="font-bold text-lg">Liverpool</span>
-                            </div>
-                        </td>
-                        <td class="py-5 px-4 text-center font-medium text-gray-500">12</td>
-                        <td class="py-5 px-4 text-center font-bold text-primary">+12</td>
-                        <td class="py-5 px-4 text-center text-2xl font-black font-outfit">27</td>
-                        <td class="py-5 px-6">
-                            <div class="flex items-center justify-center gap-1.5">
-                                <span class="w-2.5 h-2.5 rounded-full bg-primary"></span>
-                                <span class="w-2.5 h-2.5 rounded-full bg-gray-300"></span>
-                                <span class="w-2.5 h-2.5 rounded-full bg-primary"></span>
-                                <span class="w-2.5 h-2.5 rounded-full bg-primary"></span>
-                                <span class="w-2.5 h-2.5 rounded-full bg-primary"></span>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+        <!-- Loader overlay only over the table area -->
+        <div id="standings-loader" class="hidden absolute inset-0 bg-white/60 backdrop-blur-sm z-10 flex items-center justify-center top-[120px] lg:top-[80px]">
+            <div class="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+        </div>
+
+        <div id="standings-content">
+            @include('partials.standings')
         </div>
     </div>
 </div>
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const standingsContainer = document.getElementById('standings');
+        
+        if (standingsContainer) {
+            standingsContainer.addEventListener('click', function(e) {
+                // Find if a league tab was clicked
+                const tab = e.target.closest('a.league-tab');
+                if (tab) {
+                    e.preventDefault();
+                    
+                    const url = tab.getAttribute('href');
+                    const loader = document.getElementById('standings-loader');
+                    const content = document.getElementById('standings-content');
+                    
+                    // Show loader
+                    if (loader) loader.classList.remove('hidden');
+                    if (content) content.style.opacity = '0.5';
+                    
+                    // Update URL without reloading
+                    window.history.pushState({}, '', url);
+                    
+                    // Fetch new data
+                    fetch(url, {
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (content) content.innerHTML = data.html;
+                        
+                        // Update title
+                        const titleEl = document.getElementById('standings-title');
+                        if (titleEl) titleEl.innerText = data.leagueName;
+                        
+                        // Update active tab styles
+                        document.querySelectorAll('.league-tab').forEach(t => {
+                            if (t.dataset.league === data.leagueCode) {
+                                t.className = 'league-tab px-2 py-1.5 sm:px-4 sm:py-2 text-[10px] sm:text-sm font-bold rounded-full transition-colors flex-1 md:flex-none text-center whitespace-nowrap bg-secondary text-white shadow-sm';
+                            } else {
+                                t.className = 'league-tab px-2 py-1.5 sm:px-4 sm:py-2 text-[10px] sm:text-sm font-bold rounded-full transition-colors flex-1 md:flex-none text-center whitespace-nowrap text-gray-500 hover:text-secondary';
+                            }
+                        });
+
+                        if (loader) loader.classList.add('hidden');
+                        if (content) content.style.opacity = '1';
+                    })
+                    .catch(error => {
+                        console.error('Error fetching standings:', error);
+                        if (loader) loader.classList.add('hidden');
+                        if (content) content.style.opacity = '1';
+                    });
+                }
+            });
+        }
+    });
+</script>
+@endpush
 @endsection
