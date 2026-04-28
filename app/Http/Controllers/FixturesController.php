@@ -91,12 +91,21 @@ class FixturesController extends Controller
 
         foreach ($matches as $match) {
             $slug = $match['season']['slug'] ?? 'other-competition';
+            $uid = $match['uid'] ?? '';
 
             $matchedBaseCode = null;
-            foreach (array_keys($baseLeagues) as $allowed) {
-                if (str_ends_with($slug, $allowed)) {
-                    $matchedBaseCode = $allowed;
-                    break;
+            
+            // ESPN API doesn't use standard slugs for UEFA competitions in the all/scoreboard endpoint
+            if (str_contains($uid, '~l:775~') || str_ends_with($slug, 'uefa.champions') || str_ends_with($slug, 'uefa-champions-league')) {
+                $matchedBaseCode = 'uefa-champions-league';
+            } elseif (str_contains($uid, '~l:776~') || str_ends_with($slug, 'uefa.europa') || str_ends_with($slug, 'uefa-europa-league')) {
+                $matchedBaseCode = 'uefa-europa-league';
+            } else {
+                foreach (array_keys($baseLeagues) as $allowed) {
+                    if (str_ends_with($slug, $allowed)) {
+                        $matchedBaseCode = $allowed;
+                        break;
+                    }
                 }
             }
 

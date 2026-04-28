@@ -21,9 +21,8 @@ Route::get('/disclaimer', function () {
     return view('disclaimer');
 });
 
-Route::get('/news', function () {
-    return view('news');
-});
+Route::get('/news', [\App\Http\Controllers\NewsController::class, 'index'])->name('news.index');
+Route::get('/news/{slug}', [\App\Http\Controllers\NewsController::class, 'show'])->name('news.show');
 
 Route::post('/contact', function (\Illuminate\Http\Request $request) {
     $request->validate([
@@ -34,4 +33,19 @@ Route::post('/contact', function (\Illuminate\Http\Request $request) {
 
     // TODO: Actually send the email if needed in the future
     return back()->with('success', 'Thank you ' . $request->name . '! Your message has been sent successfully.');
+});
+
+// Auth Routes
+Route::get('/login', [\App\Http\Controllers\AuthController::class, 'showLoginForm'])->name('login')->middleware('guest');
+Route::post('/login', [\App\Http\Controllers\AuthController::class, 'login'])->name('login.post')->middleware('guest');
+Route::post('/logout', [\App\Http\Controllers\AuthController::class, 'logout'])->name('logout');
+
+// Admin Routes
+Route::prefix('admin')->middleware('auth')->name('admin.')->group(function () {
+    Route::get('/', function () {
+        return redirect()->route('admin.articles.index');
+    });
+    Route::post('upload-image', [\App\Http\Controllers\Admin\ArticleController::class, 'uploadImage'])->name('upload_image');
+    Route::resource('articles', \App\Http\Controllers\Admin\ArticleController::class);
+    Route::resource('categories', \App\Http\Controllers\Admin\CategoryController::class);
 });

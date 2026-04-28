@@ -3,16 +3,15 @@
 @section('title', 'Match Centre | KeoHub')
 
 @section('content')
-<div class="pt-6 pb-16 font-sans">
+<div class="md:pt-6 pb-16 font-sans">
 
     <!-- Top Header -->
-    <div class="mb-8">
+    <div class="mb-4 md:mb-8">
         <h1 class="text-4xl font-extrabold text-[#111827] mb-2 font-outfit tracking-tight">Match Centre</h1>
-        <p class="text-gray-500 text-sm">Stay updated with live scores and upcoming clashes across the globe.</p>
     </div>
 
     <!-- Date selector -->
-    <div class="flex items-center justify-center gap-2 sm:gap-3 mb-6 max-w-full">
+    <div class="flex items-center justify-center gap-2 sm:gap-3 mb-4 md:mb-6 max-w-full">
         <!-- Calendar Picker -->
         <div class="relative flex-shrink-0">
             <input type="date" value="{{ $selectedDate->format('Y-m-d') }}" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onchange="window.location.href='?date=' + this.value + '{{ $selectedComp !== 'all' ? '&comp='.$selectedComp : '' }}'">
@@ -48,13 +47,13 @@
         </a>
     </div>
 
-    <div class="flex flex-col lg:flex-row gap-8">
+    <div class="flex flex-col lg:flex-row gap-4 md:gap-8">
         <!-- Main Matches List -->
-        <div class="lg:w-3/4 flex flex-col gap-6 sm:gap-8">
+        <div class="lg:w-3/4 flex flex-col gap-4 sm:gap-8 order-2 lg:order-1">
             @forelse($groupedMatches as $compName => $group)
             <div class="mb-2">
                 <!-- Competition Header -->
-                <div class="flex items-center justify-between mb-4 px-1">
+                <div class="flex items-center justify-between mb-2 md:mb-4 px-1">
                     <div class="flex items-center gap-3">
                         <h2 class="text-lg sm:text-xl font-bold text-gray-800 font-outfit">{{ $compName }}</h2>
                     </div>
@@ -159,8 +158,40 @@
         </div>
 
         <!-- Sidebar Competitions Filter -->
-        <div class="lg:w-1/4">
-            <div class="bg-[#f8fafc] rounded-3xl p-5 border border-gray-100 sticky top-24 shadow-[inset_0_2px_10px_rgba(0,0,0,0.02)]">
+        <div class="lg:w-1/4 order-1 lg:order-2">
+            <!-- Mobile Custom Dropdown -->
+            <div class="block lg:hidden relative w-full mb-1">
+                <button type="button" id="mobile-comp-dropdown-btn" class="w-full bg-white border border-gray-200 text-[#111827] rounded-xl flex items-center justify-between py-2.5 px-3 shadow-sm hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-rose-500/20">
+                    <span class="flex items-center gap-2 font-bold font-outfit text-[13px]">
+                        @if($selectedComp === 'all')
+                        🏆 All Competitions
+                        @else
+                        <strong class="text-gray-800 font-black text-[10px] bg-gray-100 px-1.5 py-0.5 rounded">{{ $availableCompetitions[$selectedComp]['short'] ?? '' }}</strong>
+                        {{ $availableCompetitions[$selectedComp]['name'] ?? 'Competition' }}
+                        @endif
+                    </span>
+                    <svg class="w-4 h-4 text-gray-500 transition-transform duration-200" id="mobile-comp-dropdown-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+
+                <div id="mobile-comp-dropdown-menu" class="hidden absolute top-full left-0 mt-1.5 w-full bg-white rounded-xl border border-gray-100 shadow-xl z-20 overflow-hidden origin-top transition-all">
+                    <div class="max-h-[60vh] overflow-y-auto flex flex-col p-1.5 gap-0.5 scroolbar-hide">
+                        <a href="?date={{ $selectedDate->format('Y-m-d') }}&comp=all" class="flex items-center gap-3 py-2 px-3 rounded-lg transition-colors {{ $selectedComp === 'all' ? 'bg-rose-50/50 font-bold text-gray-900' : 'text-gray-600 hover:bg-gray-50 font-medium' }}">
+                            🏆 Today's Matches
+                        </a>
+                        @foreach($availableCompetitions as $code => $comp)
+                        <a href="?date={{ $selectedDate->format('Y-m-d') }}&comp={{ $code }}" class="flex items-center gap-3 py-2 px-3 rounded-lg transition-colors {{ $selectedComp === $code ? 'bg-rose-50/50 font-bold text-gray-900' : 'text-gray-600 hover:bg-gray-50 font-medium' }}">
+                            <strong class="{{ $selectedComp === $code ? 'text-gray-800 bg-white shadow-sm' : 'text-gray-400 bg-gray-100 opacity-80' }} font-black text-[9px] px-1.5 py-0.5 rounded text-center">{{ $comp['short'] }}</strong>
+                            <span class="text-[13px] truncate">{{ $comp['name'] }}</span>
+                        </a>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+
+            <!-- Desktop Sidebar List -->
+            <div class="hidden lg:block bg-[#f8fafc] rounded-3xl p-5 border border-gray-100 sticky top-24 shadow-[inset_0_2px_10px_rgba(0,0,0,0.02)]">
                 <h3 class="text-base font-extrabold text-[#111827] font-outfit mb-5">Competitions</h3>
                 <div class="flex flex-col gap-1.5">
                     <!-- Default Today matches (All relevant competitions) -->
@@ -197,4 +228,30 @@
         /* Firefox */
     }
 </style>
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const btn = document.getElementById('mobile-comp-dropdown-btn');
+        const menu = document.getElementById('mobile-comp-dropdown-menu');
+        const icon = document.getElementById('mobile-comp-dropdown-icon');
+
+        if (btn && menu) {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                menu.classList.toggle('hidden');
+                icon.classList.toggle('rotate-180');
+            });
+
+            // Close when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!menu.classList.contains('hidden') && !btn.contains(e.target) && !menu.contains(e.target)) {
+                    menu.classList.add('hidden');
+                    icon.classList.remove('rotate-180');
+                }
+            });
+        }
+    });
+</script>
+@endpush
 @endsection
