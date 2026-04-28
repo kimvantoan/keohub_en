@@ -25,7 +25,7 @@ class NewsController extends Controller
             ->where('is_published', true)
             ->whereNotIn('id', $topIds)
             ->latest('published_at')
-            ->paginate(20);
+            ->paginate(10);
 
         // If it's an AJAX request (e.g., Load More button), return only the partial HTML and next page URL
         if ($request->ajax()) {
@@ -35,15 +35,20 @@ class NewsController extends Controller
             ]);
         }
 
-        // Get a specific category for the right sidebar (e.g., MARKET NEWS).
-        // Since we don't know exact names, we just get a random category that has articles, or just pick the first one.
-        $sidebarCategory = Category::with(['articles' => function ($query) {
-            $query->where('is_published', true)
-                  ->latest('published_at')
-                  ->take(5);
-        }])->has('articles')->first();
+        $categoryBlocks = Category::whereHas('articles', function($query) {
+                $query->where('is_published', true);
+            })
+            ->withCount(['articles' => function($query) {
+                $query->where('is_published', true);
+            }])
+            ->with(['articles' => function($query) {
+                $query->where('is_published', true)
+                      ->latest('published_at')
+                      ->limit(10);
+            }])
+            ->get();
 
-        return view('news', compact('topArticles', 'latestNews', 'sidebarCategory'));
+        return view('news', compact('topArticles', 'latestNews', 'categoryBlocks'));
     }
 
     public function show($slug)
@@ -65,5 +70,24 @@ class NewsController extends Controller
             ->get();
 
         return view('article', compact('article', 'relatedArticles'));
+    }
+
+    public function loadMoreCategory(Request $request, $id)
+    {
+        if (!$request->ajax()) {
+            abort(404);
+        }
+
+        $category = Category::findOrFail($id);
+        
+        $latestNews = $category->articles()
+            ->where('is_published', true)
+            ->latest('published_at')
+            ->paginate(10);
+
+        return response()->json([
+            'html' => view('partials.latest_news_items', compact('latestNews'))->render(),
+            'next_url' => $latestNews->nextPageUrl()
+        ]);
     }
 }

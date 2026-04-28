@@ -22,6 +22,7 @@ Route::get('/disclaimer', function () {
 });
 
 Route::get('/news', [\App\Http\Controllers\NewsController::class, 'index'])->name('news.index');
+Route::get('/news/category/{id}/load-more', [\App\Http\Controllers\NewsController::class, 'loadMoreCategory'])->name('news.category.load_more');
 Route::get('/news/{slug}', [\App\Http\Controllers\NewsController::class, 'show'])->name('news.show');
 
 Route::post('/contact', function (\Illuminate\Http\Request $request) {

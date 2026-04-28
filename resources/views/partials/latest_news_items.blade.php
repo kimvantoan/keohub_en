@@ -8,7 +8,7 @@
         </div>
         <!-- Text Right -->
         <div class="w-full sm:w-2/3 flex flex-col justify-start">
-            <h3 class="text-lg font-bold text-gray-900 leading-snug group-hover:text-blue-600 transition-colors mb-2">
+            <h3 class="text-lg font-bold text-gray-900 leading-snug group-hover:text-primary transition-colors mb-2">
                 {{ $article->title }}
             </h3>
             <p class="text-sm text-gray-600 line-clamp-2 leading-relaxed">
