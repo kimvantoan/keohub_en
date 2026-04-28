@@ -44,22 +44,53 @@ class FixturesController extends Controller
         // 4. Fetch Matches from API (3-day window to ensure plenty of matches)
         $startDate = $selectedDate->copy()->subDays(1)->format('Ymd');
         $endDate = $selectedDate->copy()->addDays(1)->format('Ymd');
-        $cacheKey = "fixtures_espn_{$startDate}_{$endDate}";
+        $cacheKey = "fixtures_espn_pool_{$startDate}_{$endDate}";
         $matches = Cache::get($cacheKey);
 
         if (empty($matches)) {
+            // Determine dynamic Cache TTL
+            $todayStr = Carbon::today()->format('Ymd');
+            if ($startDate <= $todayStr && $endDate >= $todayStr) {
+                // Window contains today (live matches possible) -> Cache for 5 minutes
+                $cacheTtl = 300; 
+            } elseif ($endDate < $todayStr) {
+                // Window entirely in the past -> Cache for 24 hours
+                $cacheTtl = 86400; 
+            } else {
+                // Window entirely in the future -> Cache for 1 hour
+                $cacheTtl = 3600; 
+            }
+
             try {
-                $response = Http::get("https://site.api.espn.com/apis/site/v2/sports/soccer/all/scoreboard", [
-                    'dates' => "{$startDate}-{$endDate}",
+                $datesParam = "{$startDate}-{$endDate}";
+                $responses = Http::pool(fn ($pool) => [
+                    $pool->get("https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard", ['dates' => $datesParam]),
+                    $pool->get("https://site.api.espn.com/apis/site/v2/sports/soccer/esp.1/scoreboard", ['dates' => $datesParam]),
+                    $pool->get("https://site.api.espn.com/apis/site/v2/sports/soccer/ger.1/scoreboard", ['dates' => $datesParam]),
+                    $pool->get("https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard", ['dates' => $datesParam]),
+                    $pool->get("https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard", ['dates' => $datesParam]),
+                    $pool->get("https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.champions/scoreboard", ['dates' => $datesParam]),
+                    $pool->get("https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.europa/scoreboard", ['dates' => $datesParam]),
                 ]);
 
-                if ($response->successful()) {
-                    $json = $response->json();
-                    $matches = $json['events'] ?? [];
-                    Cache::put($cacheKey, $matches, 120);
-                } else {
-                    Log::error('ESPN API Error Fixtures: ' . $response->body());
-                    $matches = [];
+                $matches = [];
+                foreach ($responses as $response) {
+                    if ($response instanceof \Exception) {
+                        Log::error('ESPN API Exception Fixtures Pool: ' . $response->getMessage());
+                        continue;
+                    }
+                    if ($response->successful()) {
+                        $json = $response->json();
+                        if (isset($json['events'])) {
+                            $matches = array_merge($matches, $json['events']);
+                        }
+                    } else {
+                        Log::error('ESPN API Error Fixtures Pool: ' . $response->body());
+                    }
+                }
+
+                if (!empty($matches)) {
+                    Cache::put($cacheKey, $matches, $cacheTtl);
                 }
             } catch (\Exception $e) {
                 Log::error('ESPN API Exception Fixtures: ' . $e->getMessage());
