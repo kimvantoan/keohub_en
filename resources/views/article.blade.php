@@ -1,10 +1,22 @@
 @extends('layouts.app')
 
-@section('title', $article->title . ' | KeoHub News')
-@section('meta_description', $article->meta_description ?? Str::limit(strip_tags($article->content), 160))
+@section('title', $article->title . ' | LichDaBong')
+@section('meta_description', $article->meta_description ?? Str::limit(html_entity_decode(strip_tags($article->content), ENT_QUOTES, 'UTF-8'), 160))
+@section('og_type', 'article')
+@section('meta_image', $article->thumbnail ? url(Storage::url($article->thumbnail)) : url('/default-seo-image.jpg'))
 
 @section('content')
-<div class="bg-white min-h-screen">
+<div class="min-h-screen">
+    <style>
+        /* Ép hình ảnh trong bài viết tràn viền, phẳng, không bo góc */
+        .prose img {
+            width: 100%;
+            border-radius: 0 !important;
+            margin-top: 1.5em;
+            margin-bottom: 1.5em;
+            box-shadow: none !important;
+        }
+    </style>
     <!-- Article Header -->
     <div class="pt-12 pb-16">
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -34,12 +46,12 @@
     <!-- Article Content -->
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         @if($article->thumbnail)
-        <div class="mb-12 rounded-2xl overflow-hidden shadow-lg border border-gray-100">
-            <img src="{{ Storage::url($article->thumbnail) }}" alt="{{ $article->title }}" class="w-full h-auto object-cover max-h-[600px]">
+        <div class="mb-8">
+            <img src="{{ Storage::url($article->thumbnail) }}" alt="{{ $article->title }}" class="w-full h-auto object-cover">
         </div>
         @endif
 
-        <div class="prose prose-lg prose-blue max-w-none font-sans text-gray-700">
+        <div class="prose max-w-none font-sans text-gray-800 text-[17px] leading-relaxed">
             {!! $article->content !!}
         </div>
     </div>

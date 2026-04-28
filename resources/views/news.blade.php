@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Latest News | KeoHub')
+@section('title', 'Latest Football News | LichDaBong')
 
 @section('content')
 <div class="bg-white min-h-screen md:py-8 py-0">
@@ -36,7 +36,7 @@
                                 {{ $featured->title }}
                             </h2>
                             <p class="text-gray-600 mt-3 text-sm leading-relaxed line-clamp-3">
-                                {{ Str::limit(strip_tags($featured->content), 200) }}
+                                {{ $featured->meta_description ?: Str::limit(html_entity_decode(strip_tags($featured->content), ENT_QUOTES, 'UTF-8'), 200) }}
                             </p>
                         </div>
                     </a>
@@ -110,7 +110,7 @@
                                         {{ $article->title }}
                                     </h3>
                                     <p class="text-sm text-gray-600 line-clamp-2 leading-relaxed mb-3">
-                                        {{ Str::limit(strip_tags($article->content), 150) }}
+                                        {{ $article->meta_description ?: Str::limit(html_entity_decode(strip_tags($article->content), ENT_QUOTES, 'UTF-8'), 150) }}
                                     </p>
                                     <div class="text-xs text-gray-400 font-medium mt-auto">
                                         {{ \Carbon\Carbon::parse($article->published_at)->diffForHumans() }}

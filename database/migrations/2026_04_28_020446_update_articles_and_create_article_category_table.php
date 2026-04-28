@@ -11,8 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // Bỏ qua lỗi xóa khóa ngoại nếu máy chủ cPanel (MyISAM) không hỗ trợ
+        try {
+            \Illuminate\Support\Facades\DB::statement('ALTER TABLE articles DROP FOREIGN KEY articles_category_id_foreign');
+        } catch (\Exception $e) {
+            // Bỏ qua
+        }
+
         Schema::table('articles', function (Blueprint $table) {
-            $table->dropForeign(['category_id']);
             $table->dropColumn('category_id');
         });
 

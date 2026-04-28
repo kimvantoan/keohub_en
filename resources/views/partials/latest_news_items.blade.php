@@ -12,7 +12,7 @@
                 {{ $article->title }}
             </h3>
             <p class="text-sm text-gray-600 line-clamp-2 leading-relaxed">
-                {{ Str::limit(strip_tags($article->content), 150) }}
+                {{ $article->meta_description ?: Str::limit(html_entity_decode(strip_tags($article->content), ENT_QUOTES, 'UTF-8'), 150) }}
             </p>
         </div>
     </div>

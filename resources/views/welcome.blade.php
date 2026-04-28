@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Football Predictions & Articles | KeoHub')
+@section('title', 'Home | LichDaBong - Football Predictions & News')
 
 @section('content')
 @php
@@ -35,7 +35,7 @@
         
         <!-- Excerpt -->
         <p class="text-gray-300 text-sm md:text-base font-sans mb-6 md:mb-8 max-w-2xl leading-relaxed line-clamp-2">
-            {{ Str::limit(strip_tags($hero->content), 200) }}
+            {{ $hero->meta_description ?: Str::limit(html_entity_decode(strip_tags($hero->content), ENT_QUOTES, 'UTF-8'), 200) }}
         </p>
         
         <!-- Call to Action Button -->
@@ -100,7 +100,7 @@
                     <h4 class="text-sm sm:text-base font-bold text-secondary font-outfit leading-snug mb-1.5 group-hover:text-primary transition-colors line-clamp-2">
                         <a href="{{ route('news.show', $article->slug) }}">{{ $article->title }}</a>
                     </h4>
-                    <p class="text-xs sm:text-sm text-gray-500 line-clamp-2">{{ Str::limit(strip_tags($article->content), 100) }}</p>
+                    <p class="text-xs sm:text-sm text-gray-500 line-clamp-2">{{ $article->meta_description ?: Str::limit(html_entity_decode(strip_tags($article->content), ENT_QUOTES, 'UTF-8'), 100) }}</p>
                 </div>
             </div>
             @endforeach

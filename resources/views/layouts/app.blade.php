@@ -3,8 +3,31 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="@yield('meta_description', 'Football Predictions and Latest Football News')">
-    <title>@yield('title', 'KeoHub - Football Predictions & Articles')</title>
+    <title>@yield('title', 'LichDaBong - Football Predictions & News')</title>
+
+    <!-- Primary Meta Tags -->
+    <meta name="title" content="@yield('title', 'LichDaBong - Football Predictions & News')">
+    <meta name="description" content="@yield('meta_description', 'LichDaBong - The ultimate destination for football news, score predictions, match previews, and live results from top leagues.')">
+    <meta name="keywords" content="@yield('meta_keywords', 'football predictions, football news, match previews, live scores, football schedule, lichdabong')">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="{{ url()->current() }}">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="@yield('og_type', 'website')">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:title" content="@yield('title', 'LichDaBong - Football Predictions & News')">
+    <meta property="og:description" content="@yield('meta_description', 'LichDaBong - The ultimate destination for football news, score predictions, match previews, and live results from top leagues.')">
+    <meta property="og:image" content="@yield('meta_image', url('/default-seo-image.jpg'))">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="{{ url()->current() }}">
+    <meta property="twitter:title" content="@yield('title', 'LichDaBong - Football Predictions & News')">
+    <meta property="twitter:description" content="@yield('meta_description', 'LichDaBong - The ultimate destination for football news, score predictions, match previews, and live results from top leagues.')">
+    <meta property="twitter:image" content="@yield('meta_image', url('/default-seo-image.jpg'))">
+
+    <link rel="icon" type="image/png" href="{{ asset('football_logo.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('football_logo.png') }}">
 
     <!-- Tailwind v4 (App CSS) -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -16,7 +39,7 @@
         <div class="container mx-auto px-4 py-4 flex justify-between items-center">
             <a href="/" class="text-2xl font-outfit font-bold text-primary flex items-center gap-2">
                 <svg class="w-6 h-6 text-primary" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a8 8 0 100 16 8 8 0 000-16zM9 4.14A6.002 6.002 0 0115.86 11H9V4.14zm-2 0V11H2.14A6.002 6.002 0 017 4.14zM2.14 13H7v6.86A6.002 6.002 0 012.14 13zm7 0h6.86A6.002 6.002 0 019 19.86V13z"></path></svg>
-                KeoHub
+                LichDaBong
             </a>
 
             <!-- Navigation (Desktop) -->
@@ -54,7 +77,7 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
                 <!-- Column 1: Brand & Description -->
                 <div>
-                    <h3 class="text-primary font-outfit text-xl font-bold mb-4">KeoHub</h3>
+                    <h3 class="text-primary font-outfit text-xl font-bold mb-4">LichDaBong</h3>
                     <p class="text-gray-400 leading-relaxed mb-6 font-sans">
                         High-end editorial coverage and expert predictions for the beautiful game. Built for the modern football supporter.
                     </p>
@@ -106,7 +129,7 @@
 
             <!-- Bottom Copyright -->
             <div class="border-t border-gray-800 pt-8 text-center md:text-right font-sans text-sm">
-                <p>&copy; {{ date('Y') }} KeoHub. All rights reserved.</p>
+                <p>&copy; {{ date('Y') }} LichDaBong. All rights reserved.</p>
             </div>
         </div>
     </footer>
