@@ -24,7 +24,7 @@
 
             <!-- Description -->
             @if($article->meta_description)
-            <p class="text-xl text-gray-600 font-medium mb-8 leading-relaxed">
+            <p class="text-xl text-gray-600 font-medium mb-3 leading-relaxed">
                 {{ $article->meta_description }}
             </p>
             @endif
@@ -32,7 +32,7 @@
     </div>
 
     <!-- Article Content -->
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         @if($article->thumbnail)
         <div class="mb-12 rounded-2xl overflow-hidden shadow-lg border border-gray-100">
             <img src="{{ Storage::url($article->thumbnail) }}" alt="{{ $article->title }}" class="w-full h-auto object-cover max-h-[600px]">
@@ -54,20 +54,14 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 @foreach($relatedArticles as $related)
                 <a href="{{ route('news.show', $related->slug) }}" class="block group">
-                    <div class="bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100 transition-transform transform group-hover:-translate-y-1 h-full flex flex-col">
-                        <div class="relative h-40 w-full overflow-hidden">
+                    <div class="h-full flex flex-col">
+                        <div class="relative h-40 w-full overflow-hidden mb-3">
                             <img src="{{ $related->thumbnail ? Storage::url($related->thumbnail) : 'https://images.unsplash.com/photo-1522778119026-d647f0596c20?auto=format&fit=crop&q=80&w=400' }}" alt="{{ $related->title }}" class="absolute inset-0 w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500">
                         </div>
-                        <div class="p-5 flex-grow flex flex-col">
-                            @if($related->categories->count() > 0)
-                            <span class="text-primary text-[10px] font-bold uppercase tracking-widest mb-2 block">{{ $related->categories->first()->name }}</span>
-                            @endif
-                            <h3 class="text-base font-bold text-secondary font-outfit mb-2 leading-snug group-hover:text-primary transition-colors line-clamp-3">
+                        <div class="flex-grow flex flex-col pt-1">
+                            <h3 class="text-[15px] font-bold text-secondary font-outfit leading-snug group-hover:text-primary transition-colors line-clamp-3">
                                 {{ $related->title }}
                             </h3>
-                            <div class="mt-auto text-[10px] font-bold text-gray-400 uppercase tracking-widest pt-3">
-                                {{ \Carbon\Carbon::parse($related->published_at)->diffForHumans() }}
-                            </div>
                         </div>
                     </div>
                 </a>
