@@ -68,7 +68,7 @@ Route::get('/run-cmd/crawl', function () {
             '--category' => $category,
             '--limit' => $limit
         ]);
-        
+
         return "Cào thành công mục {$category}! Kết quả:<br>" . nl2br(\Illuminate\Support\Facades\Artisan::output());
     } catch (\Exception $e) {
         return "Lỗi: " . $e->getMessage();
@@ -79,7 +79,7 @@ Route::get('/run-cmd/storage-link', function () {
     if (request('secret') !== 'lichdabong123') {
         return 'Truy cập bị từ chối!';
     }
-    
+
     try {
         \Illuminate\Support\Facades\Artisan::call('storage:link');
         return "Tạo Storage Link thành công!<br>" . nl2br(\Illuminate\Support\Facades\Artisan::output());

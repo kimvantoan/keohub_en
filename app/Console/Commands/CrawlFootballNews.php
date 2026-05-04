@@ -313,7 +313,7 @@ class CrawlFootballNews extends Command
                 $lowerText = strtolower($text);
                 
                 // Bỏ qua các đoạn text rác ở cuối bài (author bio, copyright, betting warnings)
-                $spamKeywords = ['©', 'all rights reserved', '1-800-gambler', 'is a registered trademark', 'freelance writer', 'is a writer', 'editor for', 'subscribe to', 'fubotv'];
+                $spamKeywords = ['©', 'all rights reserved', '1-800-gambler', 'is a registered trademark', 'freelance', 'journalist', 'editor for', 'subscribe to', 'fubotv', 'correspondent', 'is an expert'];
                 $isSpam = false;
                 foreach ($spamKeywords as $kw) {
                     if (Str::contains($lowerText, $kw)) {
@@ -321,7 +321,12 @@ class CrawlFootballNews extends Command
                         break;
                     }
                 }
-                if ($isSpam) continue;
+                
+                if ($isSpam) {
+                    // Xóa ảnh liền trước đó (ảnh tác giả) nếu có
+                    $content = preg_replace('/<p>\[\[IMG_PLACEHOLDER_\d+\]\]<\/p>\s*$/', '', $content);
+                    continue;
+                }
 
                 if (strlen($text) > 40) { 
                     $content .= "<p>" . $text . "</p>\n";
@@ -387,11 +392,11 @@ class CrawlFootballNews extends Command
                     $slug = Str::slug('content-img-' . time() . '-' . uniqid());
                     $localPath = $this->downloadImage($src, $slug);
                     if ($localPath) {
-                        // Kiểm tra kích thước thật của ảnh
+                        // Kiểm tra kích thước thật của ảnh và tính hợp lệ
                         $fullLocalPath = storage_path('app/public/' . $localPath);
                         $size = @getimagesize($fullLocalPath);
-                        if ($size && ($size[0] < 200 || $size[1] < 200)) {
-                            // Ảnh quá nhỏ, có thể là icon hoặc logo
+                        if (!$size || $size[0] < 200 || $size[1] < 200) {
+                            // Ảnh bị lỗi (không đọc được) hoặc quá nhỏ
                             @unlink($fullLocalPath);
                             continue;
                         }
