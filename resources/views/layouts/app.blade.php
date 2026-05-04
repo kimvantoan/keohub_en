@@ -3,27 +3,27 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>@yield('title', 'LichDaBong - Football Predictions & News')</title>
+    <title>@yield('title', 'LichDaBong - Nhận Định & Tin Tức Bóng Đá')</title>
 
     <!-- Primary Meta Tags -->
-    <meta name="title" content="@yield('title', 'LichDaBong - Football Predictions & News')">
-    <meta name="description" content="@yield('meta_description', 'LichDaBong - The ultimate destination for football news, score predictions, match previews, and live results from top leagues.')">
-    <meta name="keywords" content="@yield('meta_keywords', 'football predictions, football news, match previews, live scores, football schedule, lichdabong')">
+    <meta name="title" content="@yield('title', 'LichDaBong - Nhận Định & Tin Tức Bóng Đá')">
+    <meta name="description" content="@yield('meta_description', 'LichDaBong - Điểm đến hàng đầu cho tin tức bóng đá, dự đoán tỷ số, nhận định trước trận và kết quả trực tiếp từ các giải đấu hàng đầu.')">
+    <meta name="keywords" content="@yield('meta_keywords', 'dự đoán bóng đá, tin tức bóng đá, nhận định trước trận, tỷ số trực tiếp, lịch thi đấu bóng đá, lichdabong')">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="{{ url()->current() }}">
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="@yield('og_type', 'website')">
     <meta property="og:url" content="{{ url()->current() }}">
-    <meta property="og:title" content="@yield('title', 'LichDaBong - Football Predictions & News')">
-    <meta property="og:description" content="@yield('meta_description', 'LichDaBong - The ultimate destination for football news, score predictions, match previews, and live results from top leagues.')">
+    <meta property="og:title" content="@yield('title', 'LichDaBong - Nhận Định & Tin Tức Bóng Đá')">
+    <meta property="og:description" content="@yield('meta_description', 'LichDaBong - Điểm đến hàng đầu cho tin tức bóng đá, dự đoán tỷ số, nhận định trước trận và kết quả trực tiếp từ các giải đấu hàng đầu.')">
     <meta property="og:image" content="@yield('meta_image', url('/default-seo-image.jpg'))">
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="{{ url()->current() }}">
-    <meta property="twitter:title" content="@yield('title', 'LichDaBong - Football Predictions & News')">
-    <meta property="twitter:description" content="@yield('meta_description', 'LichDaBong - The ultimate destination for football news, score predictions, match previews, and live results from top leagues.')">
+    <meta property="twitter:title" content="@yield('title', 'LichDaBong - Nhận Định & Tin Tức Bóng Đá')">
+    <meta property="twitter:description" content="@yield('meta_description', 'LichDaBong - Điểm đến hàng đầu cho tin tức bóng đá, dự đoán tỷ số, nhận định trước trận và kết quả trực tiếp từ các giải đấu hàng đầu.')">
     <meta property="twitter:image" content="@yield('meta_image', url('/default-seo-image.jpg'))">
 
     <link rel="icon" type="image/png" href="{{ asset('football_logo.png') }}">
@@ -44,9 +44,9 @@
 
             <!-- Navigation (Desktop) -->
             <nav class="hidden md:flex gap-8 font-semibold text-[15px]">
-                <a href="/" class="{{ request()->is('/') ? 'text-primary underline underline-offset-8 decoration-2' : 'text-gray-600 hover:text-primary transition-colors' }}">Home</a>
-                <a href="/match" class="{{ request()->is('match*') ? 'text-primary underline underline-offset-8 decoration-2' : 'text-gray-600 hover:text-primary transition-colors' }}">Match</a>
-                <a href="/news" class="{{ request()->is('news*') ? 'text-primary underline underline-offset-8 decoration-2' : 'text-gray-600 hover:text-primary transition-colors' }}">News</a>
+                <a href="/" class="{{ request()->is('/') ? 'text-primary underline underline-offset-8 decoration-2' : 'text-gray-600 hover:text-primary transition-colors' }}">Trang Chủ</a>
+                <a href="/match" class="{{ request()->is('match*') ? 'text-primary underline underline-offset-8 decoration-2' : 'text-gray-600 hover:text-primary transition-colors' }}">Lịch Thi Đấu</a>
+                <a href="/news" class="{{ request()->is('news*') ? 'text-primary underline underline-offset-8 decoration-2' : 'text-gray-600 hover:text-primary transition-colors' }}">Tin Tức</a>
             </nav>
 
             <!-- Mobile Menu Button -->
@@ -58,9 +58,9 @@
         <!-- Mobile Navigation Panel -->
         <div id="mobile-menu" class="hidden md:hidden absolute left-0 w-full top-full bg-white border-t border-gray-100 shadow-xl">
             <nav class="flex flex-col px-6 py-6 gap-5 font-semibold text-[15px]">
-                <a href="/" class="{{ request()->is('/') ? 'text-primary underline underline-offset-4 decoration-2' : 'text-gray-600 hover:text-primary transition-colors' }}">Home</a>
-                <a href="/match" class="{{ request()->is('match*') ? 'text-primary underline underline-offset-4 decoration-2' : 'text-gray-600 hover:text-primary transition-colors' }}">Match</a>
-                <a href="/news" class="{{ request()->is('news*') ? 'text-primary underline underline-offset-4 decoration-2' : 'text-gray-600 hover:text-primary transition-colors' }}">News</a>
+                <a href="/" class="{{ request()->is('/') ? 'text-primary underline underline-offset-4 decoration-2' : 'text-gray-600 hover:text-primary transition-colors' }}">Trang Chủ</a>
+                <a href="/match" class="{{ request()->is('match*') ? 'text-primary underline underline-offset-4 decoration-2' : 'text-gray-600 hover:text-primary transition-colors' }}">Lịch Thi Đấu</a>
+                <a href="/news" class="{{ request()->is('news*') ? 'text-primary underline underline-offset-4 decoration-2' : 'text-gray-600 hover:text-primary transition-colors' }}">Tin Tức</a>
             </nav>
         </div>
     </header>
@@ -79,7 +79,7 @@
                 <div>
                     <h3 class="text-primary font-outfit text-xl font-bold mb-4">LichDaBong</h3>
                     <p class="text-gray-400 leading-relaxed mb-6 font-sans">
-                        High-end editorial coverage and expert predictions for the beautiful game. Built for the modern football supporter.
+                        Tin tức, nhận định chuyên sâu và dự đoán bóng đá hàng đầu. Dành cho người hâm mộ hiện đại.
                     </p>
                     <div class="flex items-center gap-4 text-primary">
                         <!-- Football Icon -->
@@ -106,30 +106,30 @@
 
                 <!-- Column 2: Top Leagues -->
                 <div>
-                    <h3 class="text-white font-outfit text-xl font-bold mb-4">Top Leagues</h3>
+                    <h3 class="text-white font-outfit text-xl font-bold mb-4">Giải Đấu Hàng Đầu</h3>
                     <ul class="flex flex-col gap-3 font-sans">
-                        <li><a href="#" class="hover:text-white transition-colors">Premier League</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Ngoại Hạng Anh</a></li>
                         <li><a href="#" class="hover:text-white transition-colors">La Liga</a></li>
-                        <li><a href="#" class="hover:text-white transition-colors">Champions League</a></li>
-                        <li><a href="#" class="hover:text-white transition-colors">Transfer News</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Cúp C1 Châu Âu</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Tin Chuyển Nhượng</a></li>
                     </ul>
                 </div>
 
                 <!-- Column 3: Information -->
                 <div>
-                    <h3 class="text-white font-outfit text-xl font-bold mb-4">Information</h3>
+                    <h3 class="text-white font-outfit text-xl font-bold mb-4">Thông Tin</h3>
                     <ul class="flex flex-col gap-3 font-sans">
-                        <li><a href="/about" class="hover:text-white transition-colors">About</a></li>
-                        <li><a href="/contact" class="hover:text-white transition-colors">Contact</a></li>
-                        <li><a href="/privacy" class="hover:text-white transition-colors">Privacy Policy</a></li>
-                        <li><a href="/disclaimer" class="hover:text-white transition-colors">Disclaimer</a></li>
+                        <li><a href="/about" class="hover:text-white transition-colors">Giới Thiệu</a></li>
+                        <li><a href="/contact" class="hover:text-white transition-colors">Liên Hệ</a></li>
+                        <li><a href="/privacy" class="hover:text-white transition-colors">Chính Sách Bảo Mật</a></li>
+                        <li><a href="/disclaimer" class="hover:text-white transition-colors">Điều Khoản Sử Dụng</a></li>
                     </ul>
                 </div>
             </div>
 
             <!-- Bottom Copyright -->
             <div class="border-t border-gray-800 pt-8 text-center md:text-right font-sans text-sm">
-                <p>&copy; {{ date('Y') }} LichDaBong. All rights reserved.</p>
+                <p>&copy; {{ date('Y') }} LichDaBong. Bảo lưu mọi quyền.</p>
             </div>
         </div>
     </footer>

@@ -4,16 +4,16 @@
         <table class="w-full text-left font-sans min-w-full md:min-w-[700px] text-xs md:text-base">
             <thead>
                 <tr class="text-gray-400 text-[10px] md:text-xs font-bold uppercase tracking-wider border-b border-gray-100">
-                    <th class="py-3 px-1 md:py-5 md:px-6 w-8 md:w-16 text-center">Pos</th>
-                    <th class="py-3 px-1 md:py-5 md:px-4">Club</th>
-                    <th class="py-3 px-1 md:py-5 md:px-4 text-center" title="Played">Pl</th>
-                    <th class="py-3 px-1 md:py-5 md:px-4 text-center" title="Won">W</th>
-                    <th class="py-3 px-1 md:py-5 md:px-4 text-center" title="Draw">D</th>
-                    <th class="py-3 px-1 md:py-5 md:px-4 text-center" title="Lost">L</th>
-                    <th class="py-3 px-1 md:py-5 md:px-4 text-center hidden md:table-cell" title="Goals For">GF</th>
-                    <th class="py-3 px-1 md:py-5 md:px-4 text-center hidden md:table-cell" title="Goals Against">GA</th>
-                    <th class="py-3 px-1 md:py-5 md:px-4 text-center" title="Goal Difference">Gd</th>
-                    <th class="py-3 px-1 md:py-5 md:px-4 text-center" title="Points">Pts</th>
+                    <th class="py-3 px-1 md:py-5 md:px-6 w-8 md:w-16 text-center">Hạng</th>
+                    <th class="py-3 px-1 md:py-5 md:px-4">Đội bóng</th>
+                    <th class="py-3 px-1 md:py-5 md:px-4 text-center" title="Số trận">ST</th>
+                    <th class="py-3 px-1 md:py-5 md:px-4 text-center" title="Thắng">T</th>
+                    <th class="py-3 px-1 md:py-5 md:px-4 text-center" title="Hòa">H</th>
+                    <th class="py-3 px-1 md:py-5 md:px-4 text-center" title="Thua">B</th>
+                    <th class="py-3 px-1 md:py-5 md:px-4 text-center hidden md:table-cell" title="Bàn Thắng">BT</th>
+                    <th class="py-3 px-1 md:py-5 md:px-4 text-center hidden md:table-cell" title="Bàn Thua">BB</th>
+                    <th class="py-3 px-1 md:py-5 md:px-4 text-center" title="Hiệu Số">HS</th>
+                    <th class="py-3 px-1 md:py-5 md:px-4 text-center" title="Điểm">Đ</th>
                 </tr>
             </thead>
         <tbody class="divide-y divide-gray-50 text-secondary">
@@ -34,7 +34,7 @@
                         @else
                             <span class="w-5 h-5 md:w-9 md:h-9 rounded-full bg-gray-100 flex items-center justify-center text-[8px] md:text-xs font-bold text-gray-500 border border-gray-200 shadow-sm">{{ $team['team']['tla'] ?? '--' }}</span>
                         @endif
-                        <span class="font-bold text-xs md:text-lg truncate max-w-[80px] sm:max-w-[150px] md:max-w-none">{{ $team['team']['shortName'] ?? $team['team']['name'] ?? 'Unknown' }}</span>
+                        <span class="font-bold text-xs md:text-lg truncate max-w-[80px] sm:max-w-[150px] md:max-w-none">{{ $team['team']['shortName'] ?? $team['team']['name'] ?? 'Không rõ' }}</span>
                     </div>
                 </td>
                 <td class="py-3 px-1 md:py-5 md:px-4 text-center font-medium text-gray-500">{{ $team['playedGames'] ?? 0 }}</td>
@@ -49,7 +49,7 @@
             @empty
             <tr>
                 <td colspan="10" class="py-8 px-6 text-center text-gray-500 font-medium">
-                    Standings data is currently unavailable. Please check the API configuration.
+                    Dữ liệu bảng xếp hạng hiện không khả dụng. Vui lòng kiểm tra lại.
                 </td>
             </tr>
             @endforelse

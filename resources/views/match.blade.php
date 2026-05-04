@@ -1,13 +1,13 @@
 @extends('layouts.app')
 
-@section('title', 'Match Centre | KeoHub')
+@section('title', 'Lịch Thi Đấu | LichDaBong')
 
 @section('content')
 <div class="md:pt-6 pb-16 font-sans">
 
     <!-- Top Header -->
     <div class="mb-4 md:mb-8">
-        <h1 class="text-4xl font-extrabold text-[#111827] mb-2 font-outfit tracking-tight">Match Centre</h1>
+        <h1 class="text-4xl font-extrabold text-[#111827] mb-2 font-outfit tracking-tight">Lịch Thi Đấu</h1>
     </div>
 
     <!-- Date selector -->
@@ -33,7 +33,7 @@
             <a href="?date={{ $ds['date'] }}{{ $selectedComp !== 'all' ? '&comp='.$selectedComp : '' }}"
                 class="flex flex-col items-center justify-center min-w-[50px] sm:min-w-[60px] h-[55px] sm:h-[65px] rounded-xl transition-all {{ $ds['isSelected'] ? 'bg-[#0f172a] text-white shadow-md transform -translate-y-1 relative' : 'bg-transparent text-gray-500 hover:bg-white hover:shadow-sm' }}">
                 <span class="text-[8px] sm:text-[9px] font-bold tracking-wider uppercase mb-0 sm:mb-0.5 {{ $ds['isSelected'] ? 'text-gray-300' : 'text-gray-400' }}">
-                    {{ $ds['isToday'] ? 'Today' : $ds['day'] }}
+                    {{ $ds['isToday'] ? 'Hôm Nay' : $ds['day'] }}
                 </span>
                 <span class="text-base sm:text-lg font-bold font-outfit {{ $ds['isSelected'] ? 'text-white' : 'text-gray-800' }}">{{ $ds['dayNumber'] }}</span>
             </a>
@@ -84,14 +84,14 @@
                     $awayScore = $awayTeamNode['score'] ?? '-';
                     $matchDateObj = \Carbon\Carbon::parse($match['date'])->timezone('Asia/Ho_Chi_Minh');
                     $matchTime = $matchDateObj->format('H:i');
-                    $matchDateLabel = $matchDateObj->isToday() ? 'Today' : $matchDateObj->format('d M');
+                    $matchDateLabel = $matchDateObj->isToday() ? 'Hôm Nay' : $matchDateObj->format('d/m');
                     $matchDateKey = $matchDateObj->format('Y-m-d');
                     @endphp
 
                     @if($currentDateKey !== $matchDateKey)
                     @php
                     $currentDateKey = $matchDateKey;
-                    $dateDividerText = $matchDateObj->format('l, F j, Y');
+                    $dateDividerText = $matchDateObj->format('d/m/Y');
                     @endphp
                     <div class="col-span-1 lg:col-span-2 bg-[#f1f5f9] w-full text-center py-2.5 rounded-lg text-[#64748b] text-[13px] font-medium my-1 shadow-[inset_0_1px_3px_rgba(0,0,0,0.03)] border border-[#e2e8f0]">
                         {{ $dateDividerText }}
@@ -120,9 +120,9 @@
                             <div class="mt-1 text-[8px] sm:text-[10px] font-bold flex items-center gap-1 {{ $isLive ? 'text-green-500' : 'text-gray-400' }}">
                                 @if($isLive)
                                 <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
-                                LIVE
+                                TRỰC TIẾP
                                 @else
-                                FT
+                                KT
                                 @endif
                             </div>
                             @else
@@ -151,8 +151,8 @@
                 <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
                 </svg>
-                <h3 class="text-xl font-bold text-gray-800 mb-2 font-outfit tracking-tight">No matches available</h3>
-                <p class="text-gray-500 max-w-sm mx-auto">There are currently no football matches available for this date matching your selected filters.</p>
+                <h3 class="text-xl font-bold text-gray-800 mb-2 font-outfit tracking-tight">Không có trận đấu nào</h3>
+                <p class="text-gray-500 max-w-sm mx-auto">Hiện không có trận đấu bóng đá nào trong ngày này phù hợp với bộ lọc của bạn.</p>
             </div>
             @endforelse
         </div>
@@ -164,10 +164,10 @@
                 <button type="button" id="mobile-comp-dropdown-btn" class="w-full bg-white border border-gray-200 text-[#111827] rounded-xl flex items-center justify-between py-2.5 px-3 shadow-sm hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-rose-500/20">
                     <span class="flex items-center gap-2 font-bold font-outfit text-[13px]">
                         @if($selectedComp === 'all')
-                        🏆 All Competitions
+                        🏆 Tất Cả Giải Đấu
                         @else
                         <strong class="text-gray-800 font-black text-[10px] bg-gray-100 px-1.5 py-0.5 rounded">{{ $availableCompetitions[$selectedComp]['short'] ?? '' }}</strong>
-                        {{ $availableCompetitions[$selectedComp]['name'] ?? 'Competition' }}
+                        {{ $availableCompetitions[$selectedComp]['name'] ?? 'Giải Đấu' }}
                         @endif
                     </span>
                     <svg class="w-4 h-4 text-gray-500 transition-transform duration-200" id="mobile-comp-dropdown-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -178,7 +178,7 @@
                 <div id="mobile-comp-dropdown-menu" class="hidden absolute top-full left-0 mt-1.5 w-full bg-white rounded-xl border border-gray-100 shadow-xl z-20 overflow-hidden origin-top transition-all">
                     <div class="max-h-[60vh] overflow-y-auto flex flex-col p-1.5 gap-0.5 scroolbar-hide">
                         <a href="?date={{ $selectedDate->format('Y-m-d') }}&comp=all" class="flex items-center gap-3 py-2 px-3 rounded-lg transition-colors {{ $selectedComp === 'all' ? 'bg-rose-50/50 font-bold text-gray-900' : 'text-gray-600 hover:bg-gray-50 font-medium' }}">
-                            🏆 Today's Matches
+                            🏆 Trận Đấu Hôm Nay
                         </a>
                         @foreach($availableCompetitions as $code => $comp)
                         <a href="?date={{ $selectedDate->format('Y-m-d') }}&comp={{ $code }}" class="flex items-center gap-3 py-2 px-3 rounded-lg transition-colors {{ $selectedComp === $code ? 'bg-rose-50/50 font-bold text-gray-900' : 'text-gray-600 hover:bg-gray-50 font-medium' }}">
@@ -192,14 +192,14 @@
 
             <!-- Desktop Sidebar List -->
             <div class="hidden lg:block bg-[#f8fafc] rounded-3xl p-5 border border-gray-100 sticky top-24 shadow-[inset_0_2px_10px_rgba(0,0,0,0.02)]">
-                <h3 class="text-base font-extrabold text-[#111827] font-outfit mb-5">Competitions</h3>
+                <h3 class="text-base font-extrabold text-[#111827] font-outfit mb-5">Giải Đấu</h3>
                 <div class="flex flex-col gap-1.5">
                     <!-- Default Today matches (All relevant competitions) -->
                     <a href="?date={{ $selectedDate->format('Y-m-d') }}&comp=all" class="flex items-center gap-3 py-2.5 px-3 rounded-xl transition-colors {{ $selectedComp === 'all' ? 'bg-[#f1f5f9] shadow-[inset_2px_0_0_#e11d48] font-bold text-gray-900 border border-gray-200/50' : 'text-gray-500 hover:bg-white hover:shadow-sm' }}">
                         <svg class="w-4 h-4 {{ $selectedComp === 'all' ? 'text-gray-800' : 'opacity-60 text-gray-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
-                        <span class="text-[13px]">Today's Matches</span>
+                        <span class="text-[13px]">Trận Đấu Hôm Nay</span>
                     </a>
 
                     @foreach($availableCompetitions as $code => $comp)

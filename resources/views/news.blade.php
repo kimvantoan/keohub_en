@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Latest Football News | LichDaBong')
+@section('title', 'Tin Tức Bóng Đá Mới Nhất | LichDaBong')
 
 @section('content')
 <div class="bg-white min-h-screen md:py-8 py-0">
@@ -64,7 +64,7 @@
             <!-- LATEST NEWS -->
             <div class="mb-12">
                 <h2 class="text-xl font-black text-gray-900 uppercase border-b-2 border-gray-900 pb-2 mb-6 inline-block">
-                    LATEST NEWS
+                    TIN TỨC MỚI NHẤT
                 </h2>
 
                 <div class="flex flex-col gap-6" id="latest-news-container">
@@ -74,13 +74,13 @@
                 @if($latestNews->hasMorePages())
                 <div class="text-center mt-8">
                     <button data-url="{{ $latestNews->nextPageUrl() }}" data-container="latest-news-container" class="load-more-btn bg-gray-900 text-white font-bold uppercase tracking-widest px-8 py-3 hover:bg-primary transition-colors inline-block shadow-sm cursor-pointer">
-                        Load More
+                        Xem Thêm
                     </button>
                 </div>
                 @endif
 
                 @if($latestNews->isEmpty() && $topArticles->isEmpty())
-                <p class="text-gray-500 italic">No news articles found.</p>
+                <p class="text-gray-500 italic">Không tìm thấy bài viết nào.</p>
                 @endif
             </div>
 
@@ -124,7 +124,7 @@
                     @if($category->articles_count > 10)
                     <div class="text-center mt-8">
                         <button data-url="{{ route('news.category.load_more', ['id' => $category->id, 'page' => 2]) }}" data-container="cat-container-{{ $category->id }}" class="load-more-btn bg-gray-900 text-white font-bold uppercase tracking-widest px-8 py-3 hover:bg-primary transition-colors inline-block shadow-sm cursor-pointer">
-                            Load More
+                            Xem Thêm
                         </button>
                     </div>
                     @endif
@@ -152,7 +152,7 @@
 
                 // Change button state
                 const originalText = this.innerHTML;
-                this.innerHTML = 'Loading...';
+                this.innerHTML = 'Đang tải...';
                 this.disabled = true;
                 this.classList.add('opacity-50', 'cursor-not-allowed');
 

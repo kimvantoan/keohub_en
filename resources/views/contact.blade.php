@@ -1,18 +1,18 @@
 @extends('layouts.app')
 
-@section('title', 'Contact Us | KeoHub')
+@section('title', 'Liên Hệ | LichDaBong')
 
 @section('content')
 <div class="flex items-center justify-center py-8">
     <div class="bg-white rounded-2xl shadow-xl border border-gray-100 max-w-5xl w-full p-8 md:p-12">
-        <h1 class="text-3xl md:text-4xl font-extrabold text-secondary text-center mb-10 font-outfit">Get In Touch</h1>
+        <h1 class="text-3xl md:text-4xl font-extrabold text-secondary text-center mb-10 font-outfit">Liên Hệ Với Chúng Tôi</h1>
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16">
             <!-- Left Column: Contact Info -->
             <div class="space-y-6">
-                <h2 class="text-xl font-bold text-secondary font-outfit">Contact Information</h2>
+                <h2 class="text-xl font-bold text-secondary font-outfit">Thông Tin Liên Hệ</h2>
                 <p class="text-gray-600 font-sans leading-relaxed">
-                    We are always happy to hear your feedback, suggestions, or partnership proposals. Do not hesitate to drop us a message!
+                    Chúng tôi luôn sẵn lòng lắng nghe phản hồi, đề xuất hoặc lời mời hợp tác của bạn. Đừng ngần ngại gửi tin nhắn cho chúng tôi!
                 </p>
                 
                 <div class="space-y-6 pt-4 font-sans text-gray-700">
@@ -51,7 +51,7 @@
                     <div class="bg-primary/10 border-l-4 border-primary text-primary-dark p-4 rounded-r-lg mb-6 shadow-sm">
                         <p class="font-bold flex items-center gap-2">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                            Success!
+                            Thành công!
                         </p>
                         <p class="text-sm mt-1">{{ session('success') }}</p>
                     </div>
@@ -60,22 +60,22 @@
                 <form action="/contact" method="POST" class="space-y-6">
                     @csrf
                     <div>
-                        <label for="name" class="block text-sm font-medium text-gray-400 mb-1">Your Name</label>
-                        <input type="text" id="name" name="name" required placeholder="John Doe" class="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-gray-800 placeholder-gray-400">
+                        <label for="name" class="block text-sm font-medium text-gray-400 mb-1">Họ Tên</label>
+                        <input type="text" id="name" name="name" required placeholder="Nguyễn Văn A" class="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-gray-800 placeholder-gray-400">
                     </div>
                     
                     <div>
-                        <label for="email" class="block text-sm font-medium text-gray-400 mb-1">Email Address</label>
+                        <label for="email" class="block text-sm font-medium text-gray-400 mb-1">Địa chỉ Email</label>
                         <input type="email" id="email" name="email" required placeholder="email@example.com" class="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-gray-800 placeholder-gray-400">
                     </div>
                     
                     <div>
-                        <label for="message" class="block text-sm font-medium text-gray-400 mb-1">Message</label>
-                        <textarea id="message" name="message" rows="4" required placeholder="How can we help you?" class="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-gray-800 placeholder-gray-400 resize-none"></textarea>
+                        <label for="message" class="block text-sm font-medium text-gray-400 mb-1">Tin nhắn</label>
+                        <textarea id="message" name="message" rows="4" required placeholder="Chúng tôi có thể giúp gì cho bạn?" class="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-gray-800 placeholder-gray-400 resize-none"></textarea>
                     </div>
                     
                     <button type="submit" class="w-full bg-primary hover:bg-primary-dark text-white font-bold py-3 px-6 rounded-lg transition-colors shadow-md transform hover:-translate-y-0.5">
-                        Send Message
+                        Gửi Tin Nhắn
                     </button>
                 </form>
             </div>

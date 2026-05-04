@@ -61,7 +61,7 @@
     <div class="bg-gray-50 border-t border-gray-200 py-16">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 class="text-2xl font-black text-secondary font-outfit uppercase tracking-tight mb-8 border-l-4 border-primary pl-3">
-                Related Articles
+                Bài Viết Liên Quan
             </h2>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 @foreach($relatedArticles as $related)

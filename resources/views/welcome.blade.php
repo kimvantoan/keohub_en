@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Home | LichDaBong - Football Predictions & News')
+@section('title', 'Trang Chủ | LichDaBong - Nhận Định & Tin Tức Bóng Đá')
 
 @section('content')
 @php
@@ -23,7 +23,7 @@
     <div class="absolute bottom-0 left-0 p-6 sm:p-8 md:p-12 lg:p-16 max-w-4xl z-10">
         <!-- Breaking News Badge -->
         <div class="inline-block bg-[#1f8c4b] text-white text-[11px] font-bold uppercase tracking-[0.2em] px-4 py-1.5 mb-6 shadow-sm">
-            {{ $hero->categories->first() ? $hero->categories->first()->name : 'Featured' }}
+            {{ $hero->categories->first() ? $hero->categories->first()->name : 'Nổi Bật' }}
         </div>
         
         <!-- Big Title -->
@@ -40,7 +40,7 @@
         
         <!-- Call to Action Button -->
         <a href="{{ route('news.show', $hero->slug) }}" class="inline-flex items-center gap-2 bg-[#86efac] hover:bg-[#4ade80] text-secondary font-black py-3 px-6 md:py-4 md:px-8 transition-all shadow-lg transform hover:-translate-y-1 hover:shadow-[#86efac]/20 text-sm md:text-base">
-            Read Article 
+            Đọc Bài Viết 
             <svg class="w-5 h-5 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
         </a>
     </div>
@@ -52,12 +52,12 @@
     <!-- Section Header -->
     <div class="flex justify-between items-end mb-8 border-b-2 border-gray-100 pb-4">
         <div class="relative">
-            <h2 class="text-2xl md:text-3xl font-black text-secondary font-outfit uppercase tracking-tight">Trending Stories</h2>
+            <h2 class="text-2xl md:text-3xl font-black text-secondary font-outfit uppercase tracking-tight">Tin Tức Nổi Bật</h2>
             <div class="absolute -bottom-[18px] left-0 w-20 h-1 bg-primary"></div>
         </div>
         <a href="{{ route('news.index') }}" class="text-primary font-bold hover:text-primary-dark transition-colors flex items-center gap-1 group">
-            <span class="hidden sm:inline">View All News</span>
-            <span class="sm:hidden">All News</span>
+            <span class="hidden sm:inline">Xem Tất Cả Tin Tức</span>
+            <span class="sm:hidden">Tất Cả Tin</span>
             <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
         </a>
     </div>
@@ -73,7 +73,7 @@
             <!-- Glassmorphism overlay card -->
             <div class="absolute bottom-6 left-6 right-6 md:right-auto md:w-4/5 bg-white/90 backdrop-blur-md p-6 border-l-4 border-primary shadow-xl">
                 <span class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2 block">
-                    {{ $trendingMain->categories->first() ? $trendingMain->categories->first()->name : 'News' }}
+                    {{ $trendingMain->categories->first() ? $trendingMain->categories->first()->name : 'Tin Tức' }}
                 </span>
                 <h3 class="text-lg sm:text-xl md:text-2xl font-black text-secondary font-outfit uppercase leading-tight">
                     <a href="{{ route('news.show', $trendingMain->slug) }}" class="hover:text-primary transition-colors line-clamp-2">
@@ -95,7 +95,7 @@
                 </div>
                 <div class="flex flex-col justify-center">
                     <span class="text-[10px] sm:text-xs font-bold text-primary uppercase tracking-widest mb-1.5 line-clamp-1">
-                        {{ $article->categories->first() ? $article->categories->first()->name : 'Update' }}
+                        {{ $article->categories->first() ? $article->categories->first()->name : 'Cập Nhật' }}
                     </span>
                     <h4 class="text-sm sm:text-base font-bold text-secondary font-outfit leading-snug mb-1.5 group-hover:text-primary transition-colors line-clamp-2">
                         <a href="{{ route('news.show', $article->slug) }}">{{ $article->title }}</a>
@@ -114,7 +114,7 @@
     <div class="bg-[#f4f6f8] rounded-2xl md:rounded-3xl p-2 sm:p-6 md:p-10 border border-gray-100 shadow-inner overflow-hidden relative">
         <!-- Header & Tabs -->
         <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-4 md:mb-8 gap-4 md:gap-6 px-2 md:px-0 relative z-20">
-            <h2 id="standings-title" class="text-xl md:text-3xl font-black text-secondary font-outfit uppercase tracking-tight">{{ $currentLeagueName ?? 'Premier League' }}</h2>
+            <h2 id="standings-title" class="text-xl md:text-3xl font-black text-secondary font-outfit uppercase tracking-tight">{{ $currentLeagueName ?? 'Ngoại Hạng Anh' }}</h2>
             
             <div class="flex flex-wrap items-center gap-1 sm:gap-2 bg-gray-200/50 p-1 rounded-3xl w-full lg:w-auto justify-center" id="standings-tabs">
                 @php
