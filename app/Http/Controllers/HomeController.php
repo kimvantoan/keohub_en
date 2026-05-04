@@ -8,21 +8,26 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
 use App\Models\Article;
+use App\Models\Category;
 
 class HomeController extends Controller
 {
     public function index(Request $request)
     {
-        // 1. Fetch Articles for Hero & Trending Sections
-        $heroArticles = Article::with('categories')
-            ->where('is_published', true)
-            ->latest('published_at')
-            ->take(5)
+
+
+        // 2. Fetch Category Blocks dynamically (all categories that have articles)
+        $categoryBlocks = Category::whereHas('articles', function($q) {
+                $q->where('is_published', true);
+            })
+            ->with(['articles' => function($q) {
+                $q->where('is_published', true)
+                  ->latest('published_at')
+                  ->take(5);
+            }])
             ->get();
 
-        // Removed because we just get the latest 5. If there are fewer than 5, it just shows what's available.
-
-        // 2. Fetch Standings
+        // 3. Fetch Standings
         $allowedLeagues = [
             'PL' => 'Premier League',
             'PD' => 'La Liga',
@@ -97,6 +102,6 @@ class HomeController extends Controller
             ]);
         }
 
-        return view('welcome', compact('heroArticles', 'standings', 'currentLeagueCode', 'currentLeagueName', 'allowedLeagues'));
+        return view('welcome', compact('categoryBlocks', 'standings', 'currentLeagueCode', 'currentLeagueName', 'allowedLeagues'));
     }
 }

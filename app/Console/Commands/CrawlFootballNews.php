@@ -16,7 +16,7 @@ class CrawlFootballNews extends Command
      *
      * @var string
      */
-    protected $signature = 'crawl:news {--limit=5} {--source=https://www.espn.com/espn/rss/soccer/news}';
+    protected $signature = 'crawl:news {--limit=5} {--source=https://www.si.com/soccer} {--category=}';
 
     /**
      * The console command description.
@@ -32,78 +32,137 @@ class CrawlFootballNews extends Command
     {
         $limit = $this->option('limit');
         $sourceUrl = $this->option('source');
+        $categoryOption = $this->option('category');
 
         $this->info("Bắt đầu lấy dữ liệu từ: $sourceUrl");
 
-        // 1. Tạo hoặc lấy Category "Bóng đá Quốc tế"
+        // 1. Lấy tên Category từ command option, mặc định là "Bóng đá Quốc tế" nếu không truyền
+        $categoryName = $categoryOption ?: 'Bóng đá Quốc tế';
+        $categorySlug = Str::slug($categoryName);
+
         $category = Category::firstOrCreate(
-            ['slug' => 'bong-da-quoc-te'],
-            [
-                'name' => 'Bóng đá Quốc tế'
-            ]
+            ['slug' => $categorySlug],
+            ['name' => $categoryName]
         );
         $this->info("Đã dùng chuyên mục: " . $category->name);
 
         // 2. Fetch RSS
         try {
-            $response = Http::withoutVerifying()->get($sourceUrl);
+            $response = Http::withoutVerifying()
+                ->timeout(60)
+                ->withHeaders([
+                    'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+                ])
+                ->get($sourceUrl);
             if (!$response->successful()) {
                 $this->error('Không thể truy cập RSS feed.');
                 return;
             }
 
-            $xml = simplexml_load_string($response->body(), 'SimpleXMLElement', LIBXML_NOCDATA);
+            $body = $response->body();
+            $xml = @simplexml_load_string($body, 'SimpleXMLElement', LIBXML_NOCDATA);
 
-            if (!$xml || !isset($xml->channel->item)) {
-                $this->error('RSS feed không đúng định dạng.');
-                return;
-            }
-        } catch (\Exception $e) {
-            $this->error('Lỗi khi đọc RSS: ' . $e->getMessage());
-            return;
-        }
+            $articles = [];
 
-        $items = $xml->channel->item;
-        $count = 0;
-
-        foreach ($items as $item) {
-            if ($count >= $limit) break;
-
-            $title = (string) $item->title;
-            $link = (string) $item->link;
-            $description = (string) $item->description;
-            $pubDate = date('Y-m-d H:i:s', strtotime((string) $item->pubDate));
-
-            $this->info("Đang xử lý: $title");
-
-            // Extract Image
-            $imageUrl = null;
-            if (isset($item->enclosure)) {
-                $imageUrl = (string) $item->enclosure['url'];
-            }
-            // Check media:content or media:thumbnail
-            if (!$imageUrl) {
-                $namespaces = $item->getNamespaces(true);
-                if (isset($namespaces['media'])) {
-                    $media = $item->children($namespaces['media']);
-                    if (isset($media->content)) {
-                        $imageUrl = (string) $media->content->attributes()->url;
-                    } elseif (isset($media->thumbnail)) {
-                        $imageUrl = (string) $media->thumbnail->attributes()->url;
+            if ($xml && isset($xml->channel->item)) {
+                // Parse RSS XML
+                foreach ($xml->channel->item as $item) {
+                    $articles[] = [
+                        'title' => (string) $item->title,
+                        'link' => (string) $item->link,
+                        'description' => (string) $item->description,
+                        'pubDate' => date('Y-m-d H:i:s', strtotime((string) $item->pubDate)),
+                        'item' => $item,
+                    ];
+                }
+            } else if (stripos($body, '<html') !== false) {
+                // Phân tích HTML để cào bài trực tiếp từ link (VD: si.com/soccer)
+                $dom = new \DOMDocument();
+                @$dom->loadHTML($body, LIBXML_NOERROR | LIBXML_NOWARNING);
+                $xpath = new \DOMXPath($dom);
+                
+                $links = $xpath->query('//a');
+                $seenLinks = [];
+                
+                foreach ($links as $link) {
+                    $href = $link->getAttribute('href');
+                    $title = trim(strip_tags($link->nodeValue));
+                    
+                    if (!empty($href) && strlen($href) > 40 && strlen($title) > 15 && Str::contains($href, '/soccer/') && substr_count($href, '-') >= 3) {
+                        if (Str::contains($href, ['/archive', '/standings', '/stats', '/newsletters', '/tickets'])) continue;
+                        
+                        // Chuẩn hóa URL tuyệt đối
+                        if (str_starts_with($href, '/')) {
+                            $parsedSource = parse_url($sourceUrl);
+                            $href = $parsedSource['scheme'] . '://' . $parsedSource['host'] . $href;
+                        }
+                        
+                        if (!isset($seenLinks[$href])) {
+                            $seenLinks[$href] = true;
+                            $articles[] = [
+                                'title' => $title,
+                                'link' => $href,
+                                'description' => '', // Lấy lúc cào nội dung
+                                'pubDate' => now()->toDateTimeString(),
+                                'item' => null,
+                            ];
+                        }
                     }
                 }
             }
 
+            if (empty($articles)) {
+                $this->error('Không tìm thấy bài viết nào từ nguồn (RSS/HTML không hợp lệ hoặc không có dữ liệu).');
+                return;
+            }
+            
+        } catch (\Exception $e) {
+            $this->error('Lỗi khi đọc Nguồn: ' . $e->getMessage());
+            return;
+        }
+
+        $count = 0;
+
+        foreach ($articles as $article) {
+            if ($count >= $limit) break;
+
+            $title = $article['title'];
+            $link = $article['link'];
+            $description = $article['description'];
+            $pubDate = $article['pubDate'];
+
+            $this->info("Đang xử lý: $title");
+
             // Cào bài viết gốc
             $htmlContent = $this->scrapeFullArticle($link);
 
-            // Tìm ảnh từ HTML nếu RSS không có
-            if (!$imageUrl && strlen($htmlContent) > 50) {
+            // Extract Image - Ưu tiên từ HTML (thường là og:image chất lượng cao)
+            $imageUrl = null;
+            if (strlen($htmlContent) > 50) {
                 $imageUrl = $this->extractImageFromHtml($htmlContent);
             }
 
+            // Nếu không có ảnh từ HTML, thử lấy từ RSS
+            if (!$imageUrl && $article['item']) {
+                $item = $article['item'];
+                if (isset($item->enclosure)) {
+                    $imageUrl = (string) $item->enclosure['url'];
+                }
+                if (!$imageUrl) {
+                    $namespaces = $item->getNamespaces(true);
+                    if (isset($namespaces['media'])) {
+                        $media = $item->children($namespaces['media']);
+                        if (isset($media->content)) {
+                            $imageUrl = (string) $media->content->attributes()->url;
+                        } elseif (isset($media->thumbnail)) {
+                            $imageUrl = (string) $media->thumbnail->attributes()->url;
+                        }
+                    }
+                }
+            }
+
             // Generate content using Google Free API
-            $geminiData = $this->translateWithGoogleFree($title, $description, $link, $htmlContent);
+            $geminiData = $this->translateWithGoogleFree($title, $description, $link, $htmlContent, $imageUrl);
             if (!$geminiData) {
                 $this->error("Lỗi khi dùng Google Dịch cho bài: $title. Bỏ qua.");
                 continue;
@@ -126,8 +185,7 @@ class CrawlFootballNews extends Command
 
             // Lưu vào DB
             try {
-                Article::create([
-                    'category_id' => $category->id,
+                $article = Article::create([
                     'title' => $translatedTitle,
                     'slug' => $slug,
                     'content' => $geminiData['content'] ?? '',
@@ -137,6 +195,9 @@ class CrawlFootballNews extends Command
                     'is_published' => true,
                     'published_at' => $pubDate,
                 ]);
+
+                // Gắn bài viết vào chuyên mục
+                $article->categories()->sync([$category->id]);
 
                 $this->info("Đã lưu thành công: $translatedTitle");
                 $count++;
@@ -148,19 +209,19 @@ class CrawlFootballNews extends Command
         $this->info("Hoàn tất! Đã lưu $count bài viết mới.");
     }
 
-    private function translateWithGoogleFree($title, $summary, $link, $htmlContent)
+    private function translateWithGoogleFree($title, $summary, $link, $htmlContent, $imageUrl = null)
     {
         $translatedTitle = $this->translateText($title);
-        $translatedSummary = $this->translateText($summary);
+        $translatedSummary = $summary ? $this->translateText($summary) : '';
 
-        if (!$translatedTitle || !$translatedSummary) {
+        if (!$translatedTitle) {
             return null;
         }
 
         $translatedContentHTML = '';
         
         if (strlen($htmlContent) > 50) {
-            $extractedData = $this->extractContentFromHtml($htmlContent);
+            $extractedData = $this->extractContentFromHtml($htmlContent, $imageUrl);
             $extractedText = $extractedData['text'];
             $imageMap = $extractedData['imageMap'];
 
@@ -175,6 +236,10 @@ class CrawlFootballNews extends Command
                 // Thay thế phòng trường hợp Google thêm khoảng trắng ví dụ: [ [ IMG_PLACEHOLDER_0 ] ]
                 $pattern = '/' . str_replace(['[', ']'], ['\[\s*', '\s*\]'], $placeholder) . '/i';
                 $translatedContentHTML = preg_replace($pattern, $imgHtml, $translatedContentHTML);
+            }
+            
+            if (empty($translatedSummary)) {
+                $translatedSummary = mb_substr(trim(strip_tags($translatedContentHTML)), 0, 160) . '...';
             }
         } else {
             // Nếu không cào được thì dùng summary
@@ -192,7 +257,12 @@ class CrawlFootballNews extends Command
     private function scrapeFullArticle($url)
     {
         try {
-            $response = Http::withoutVerifying()->get($url);
+            $response = Http::withoutVerifying()
+                ->timeout(60)
+                ->withHeaders([
+                    'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+                ])
+                ->get($url);
             if (!$response->successful()) return '';
             
             $html = $response->body();
@@ -202,11 +272,35 @@ class CrawlFootballNews extends Command
         }
     }
 
-    private function extractContentFromHtml($html)
+    private function extractContentFromHtml($html, $imageUrl = null)
     {
         $dom = new \DOMDocument();
         @$dom->loadHTML($html, LIBXML_NOERROR | LIBXML_NOWARNING);
         $xpath = new \DOMXPath($dom);
+
+        // Xóa các thẻ rác (video embed, author bio, ads, newsletter) trước khi lấy nội dung
+        $junkSelectors = [
+            '//div[contains(@class, "author")]',
+            '//div[contains(@class, "bio")]',
+            '//div[contains(@class, "video")]',
+            '//div[contains(@id, "connatix")]',
+            '//div[contains(@class, "jwplayer")]',
+            '//div[contains(@class, "ad-")]',
+            '//div[contains(@class, "newsletter")]',
+            '//section[contains(@class, "author")]',
+            '//figure[contains(@class, "author")]',
+            '//iframe',
+            '//script',
+            '//style'
+        ];
+        
+        foreach ($junkSelectors as $selector) {
+            foreach ($xpath->query($selector) as $node) {
+                if ($node->parentNode) {
+                    $node->parentNode->removeChild($node);
+                }
+            }
+        }
         
         $elements = $xpath->query('//p | //img');
         $content = '';
@@ -216,13 +310,50 @@ class CrawlFootballNews extends Command
         foreach ($elements as $el) {
             if ($el->nodeName === 'p') {
                 $text = trim($el->nodeValue);
+                $lowerText = strtolower($text);
+                
+                // Bỏ qua các đoạn text rác ở cuối bài (author bio, copyright, betting warnings)
+                $spamKeywords = ['©', 'all rights reserved', '1-800-gambler', 'is a registered trademark', 'freelance writer', 'is a writer', 'editor for', 'subscribe to', 'fubotv'];
+                $isSpam = false;
+                foreach ($spamKeywords as $kw) {
+                    if (Str::contains($lowerText, $kw)) {
+                        $isSpam = true;
+                        break;
+                    }
+                }
+                if ($isSpam) continue;
+
                 if (strlen($text) > 40) { 
                     $content .= "<p>" . $text . "</p>\n";
                 }
             } elseif ($el->nodeName === 'img') {
                 $src = $el->getAttribute('data-src');
                 if (empty($src)) $src = $el->getAttribute('data-default-src');
+                
+                // Trích xuất ảnh lớn từ thẻ <source> nếu nằm trong <picture> (đặc biệt cho si.com, 90min)
+                if (empty($src) || Str::contains($src, 'w_16')) {
+                    if ($el->parentNode && $el->parentNode->nodeName === 'picture') {
+                        $sources = $xpath->query('./source', $el->parentNode);
+                        if ($sources->length > 0) {
+                            $srcset = $sources->item($sources->length - 1)->getAttribute('srcset');
+                            if (!empty($srcset)) {
+                                $parts = explode(',', $srcset);
+                                $lastPart = trim(end($parts));
+                                $urlPart = explode(' ', $lastPart)[0];
+                                if (!empty($urlPart)) {
+                                    $src = $urlPart;
+                                }
+                            }
+                        }
+                    }
+                }
+                
                 if (empty($src)) $src = $el->getAttribute('src');
+                
+                // Mẹo cho MinuteMedia/SI: Nếu ảnh vẫn là dạng thu nhỏ w_16, cố gắng tăng lên w_1080
+                if (Str::contains($src, 'w_16')) {
+                    $src = str_replace('w_16', 'w_1080', $src);
+                }
                 
                 $width = (int) $el->getAttribute('width');
                 $height = (int) $el->getAttribute('height');
@@ -234,9 +365,22 @@ class CrawlFootballNews extends Command
                 
                 if (!empty($src) && str_starts_with($src, 'http')) {
                     $lowerSrc = strtolower($src);
-                    // Bỏ qua logo, icon, avatar, tracking pixel
-                    if (Str::contains($lowerSrc, ['logo', 'icon', 'avatar', 'profile', 'author', 'tracker', '1x1', '.svg'])) {
+                    // Bỏ qua logo, icon, avatar, tracking pixel, bio photo
+                    if (Str::contains($lowerSrc, ['logo', 'icon', 'avatar', 'profile', 'author', 'tracker', '1x1', '.svg', 'bio'])) {
                         continue;
+                    }
+
+                    // Kiểm tra xem ảnh này có giống với ảnh thumbnail (hero image) không
+                    if ($imageUrl) {
+                        $srcBasename = pathinfo(parse_url($src, PHP_URL_PATH), PATHINFO_FILENAME);
+                        $imgUrlBasename = pathinfo(parse_url($imageUrl, PHP_URL_PATH), PATHINFO_FILENAME);
+                        
+                        // Nếu tên file giống nhau hoặc là chuỗi con của nhau (bỏ qua các tham số resize trên URL)
+                        if (!empty($srcBasename) && !empty($imgUrlBasename)) {
+                            if (Str::contains($srcBasename, $imgUrlBasename) || Str::contains($imgUrlBasename, $srcBasename)) {
+                                continue; // Bỏ qua ảnh này để không bị lặp 2 ảnh giống nhau
+                            }
+                        }
                     }
 
                     // Tải ảnh về
@@ -338,7 +482,7 @@ class CrawlFootballNews extends Command
         $url = "https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=vi&dt=t&q=" . urlencode($text);
         
         try {
-            $response = Http::withoutVerifying()->get($url);
+            $response = Http::withoutVerifying()->timeout(60)->get($url);
             if ($response->successful()) {
                 $json = $response->json();
                 $translated = '';
@@ -361,7 +505,13 @@ class CrawlFootballNews extends Command
     private function downloadImage($url, $slug)
     {
         try {
-            $imageContent = Http::withoutVerifying()->get($url)->body();
+            $imageContent = Http::withoutVerifying()
+                ->timeout(60)
+                ->withHeaders([
+                    'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+                ])
+                ->get($url)
+                ->body();
             if ($imageContent) {
                 // Lấy đuôi mở rộng từ URL
                 $extension = pathinfo(parse_url($url, PHP_URL_PATH), PATHINFO_EXTENSION);

@@ -37,7 +37,7 @@
             <!-- Description -->
             @if($article->meta_description)
             <p class="text-xl text-gray-600 font-medium mb-3 leading-relaxed">
-                {{ $article->meta_description }}
+                {{ strip_tags(html_entity_decode($article->meta_description)) }}
             </p>
             @endif
         </div>

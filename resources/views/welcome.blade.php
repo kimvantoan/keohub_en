@@ -3,110 +3,39 @@
 @section('title', 'Trang Chủ | LichDaBong - Nhận Định & Tin Tức Bóng Đá')
 
 @section('content')
-@php
-    $hero = $heroArticles->first();
-    $trendingMain = $heroArticles->slice(1, 1)->first();
-    $trendingSide = $heroArticles->slice(2, 3);
-@endphp
 
-@if($hero)
-<!-- Hero Section -->
-<div class="relative w-full h-[450px] md:h-[650px] overflow-hidden shadow-2xl mb-12 group border border-gray-100">
-    <!-- Background Image (Stadium) -->
-    <img src="{{ $hero->thumbnail ? Storage::url($hero->thumbnail) : 'https://images.unsplash.com/photo-1543326727-cf6c39e8f84c?q=80&w=1600&auto=format&fit=crop' }}" alt="{{ $hero->title }}" class="absolute inset-0 w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-1000">
-    
-    <!-- Gradient Overlays for readability -->
-    <div class="absolute inset-0 bg-gradient-to-t from-secondary via-secondary/60 to-transparent"></div>
-    <div class="absolute inset-0 bg-gradient-to-r from-secondary/90 via-secondary/40 to-transparent"></div>
-
-    <!-- Content Overlaid -->
-    <div class="absolute bottom-0 left-0 p-6 sm:p-8 md:p-12 lg:p-16 max-w-4xl z-10">
-        <!-- Breaking News Badge -->
-        <div class="inline-block bg-[#1f8c4b] text-white text-[11px] font-bold uppercase tracking-[0.2em] px-4 py-1.5 mb-6 shadow-sm">
-            {{ $hero->categories->first() ? $hero->categories->first()->name : 'Nổi Bật' }}
-        </div>
-        
-        <!-- Big Title -->
-        <h1 class="text-2xl md:text-4xl lg:text-5xl font-black text-white font-outfit uppercase leading-[1.15] mb-4 md:mb-6">
-            <a href="{{ route('news.show', $hero->slug) }}" class="hover:text-primary transition-colors line-clamp-3">
-                {{ $hero->title }}
-            </a>
-        </h1>
-        
-        <!-- Excerpt -->
-        <p class="text-gray-300 text-sm md:text-base font-sans mb-6 md:mb-8 max-w-2xl leading-relaxed line-clamp-2">
-            {{ $hero->meta_description ?: Str::limit(html_entity_decode(strip_tags($hero->content), ENT_QUOTES, 'UTF-8'), 200) }}
-        </p>
-        
-        <!-- Call to Action Button -->
-        <a href="{{ route('news.show', $hero->slug) }}" class="inline-flex items-center gap-2 bg-[#86efac] hover:bg-[#4ade80] text-secondary font-black py-3 px-6 md:py-4 md:px-8 transition-all shadow-lg transform hover:-translate-y-1 hover:shadow-[#86efac]/20 text-sm md:text-base">
-            Đọc Bài Viết 
-            <svg class="w-5 h-5 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-        </a>
-    </div>
-</div>
-@endif
-<!-- Trending Stories Section -->
-@if($trendingMain || $trendingSide->count() > 0)
-<div class="mt-20 mb-10">
-    <!-- Section Header -->
-    <div class="flex justify-between items-end mb-8 border-b-2 border-gray-100 pb-4">
-        <div class="relative">
-            <h2 class="text-2xl md:text-3xl font-black text-secondary font-outfit uppercase tracking-tight">Tin Tức Nổi Bật</h2>
-            <div class="absolute -bottom-[18px] left-0 w-20 h-1 bg-primary"></div>
-        </div>
-        <a href="{{ route('news.index') }}" class="text-primary font-bold hover:text-primary-dark transition-colors flex items-center gap-1 group">
-            <span class="hidden sm:inline">Xem Tất Cả Tin Tức</span>
-            <span class="sm:hidden">Tất Cả Tin</span>
-            <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-        </a>
-    </div>
-
-    <!-- Layout Grid -->
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        <!-- Main Featured Story (Left, 8 cols) -->
-        @if($trendingMain)
-        <div class="lg:col-span-7 xl:col-span-8 relative overflow-hidden shadow-md group h-[400px] md:h-[500px]">
-            <img src="{{ $trendingMain->thumbnail ? Storage::url($trendingMain->thumbnail) : 'https://images.unsplash.com/photo-1518605368461-1e1e12739502?q=80&w=1200&auto=format&fit=crop' }}" alt="{{ $trendingMain->title }}" class="absolute inset-0 w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700">
-            <div class="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-gray-900/20 to-transparent"></div>
-            
-            <!-- Glassmorphism overlay card -->
-            <div class="absolute bottom-6 left-6 right-6 md:right-auto md:w-4/5 bg-white/90 backdrop-blur-md p-6 border-l-4 border-primary shadow-xl">
-                <span class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2 block">
-                    {{ $trendingMain->categories->first() ? $trendingMain->categories->first()->name : 'Tin Tức' }}
-                </span>
-                <h3 class="text-lg sm:text-xl md:text-2xl font-black text-secondary font-outfit uppercase leading-tight">
-                    <a href="{{ route('news.show', $trendingMain->slug) }}" class="hover:text-primary transition-colors line-clamp-2">
-                        {{ $trendingMain->title }}
-                    </a>
-                </h3>
+<!-- Dynamic Category Sections -->
+@if(isset($categoryBlocks) && $categoryBlocks->count() > 0)
+    @foreach($categoryBlocks as $block)
+        @if($block->articles->count() > 0)
+        <div class="mt-16 mb-10">
+            <!-- Section Header -->
+            <div class="flex justify-between items-end mb-6 border-b border-gray-200 pb-2">
+                <h2 class="text-xl md:text-2xl font-black text-secondary font-outfit uppercase tracking-tight">{{ $block->name }}</h2>
+                <a href="{{ route('news.index') }}?category={{ $block->slug }}" class="text-primary font-bold hover:text-primary-dark transition-colors text-xs sm:text-sm uppercase tracking-wider">
+                    MORE {{ strtoupper($block->name) }}
+                </a>
             </div>
-        </div>
-        @else
-        <div class="lg:col-span-7 xl:col-span-8"></div>
-        @endif
 
-        <!-- Right Vertical List (Right, 4 cols) -->
-        <div class="lg:col-span-5 xl:col-span-4 flex flex-col justify-between gap-6">
-            @foreach($trendingSide as $article)
-            <div class="flex gap-5 group cursor-pointer" onclick="window.location.href='{{ route('news.show', $article->slug) }}'">
-                <div class="w-1/3 min-w-[120px] max-w-[140px] h-[100px] overflow-hidden flex-shrink-0 shadow-sm relative">
-                    <img src="{{ $article->thumbnail ? Storage::url($article->thumbnail) : 'https://images.unsplash.com/photo-1522778119026-d647f0596c20?q=80&w=400&auto=format&fit=crop' }}" alt="{{ $article->title }}" class="absolute inset-0 w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">
-                </div>
-                <div class="flex flex-col justify-center">
-                    <span class="text-[10px] sm:text-xs font-bold text-primary uppercase tracking-widest mb-1.5 line-clamp-1">
-                        {{ $article->categories->first() ? $article->categories->first()->name : 'Cập Nhật' }}
-                    </span>
-                    <h4 class="text-sm sm:text-base font-bold text-secondary font-outfit leading-snug mb-1.5 group-hover:text-primary transition-colors line-clamp-2">
+            <!-- Articles Grid -->
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                @foreach($block->articles as $article)
+                <div class="flex flex-col group cursor-pointer" onclick="window.location.href='{{ route('news.show', $article->slug) }}'">
+                    <div class="w-full aspect-[4/3] sm:aspect-[16/9] overflow-hidden mb-3 relative bg-gray-100 shadow-sm">
+                        <img src="{{ $article->thumbnail ? Storage::url($article->thumbnail) : 'https://images.unsplash.com/photo-1522778119026-d647f0596c20?q=80&w=400&auto=format&fit=crop' }}" alt="{{ $article->title }}" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <h3 class="text-sm md:text-base font-bold text-secondary font-outfit leading-tight group-hover:text-primary transition-colors line-clamp-3 mb-2">
                         <a href="{{ route('news.show', $article->slug) }}">{{ $article->title }}</a>
-                    </h4>
-                    <p class="text-xs sm:text-sm text-gray-500 line-clamp-2">{{ $article->meta_description ?: Str::limit(html_entity_decode(strip_tags($article->content), ENT_QUOTES, 'UTF-8'), 100) }}</p>
+                    </h3>
+                    <p class="text-[11px] sm:text-xs text-gray-400 font-sans mt-auto uppercase tracking-wide">
+                        LichDaBong | {{ $article->published_at ? \Carbon\Carbon::parse($article->published_at)->format('M j, Y') : $article->created_at->format('M j, Y') }}
+                    </p>
                 </div>
+                @endforeach
             </div>
-            @endforeach
         </div>
-    </div>
-</div>
+        @endif
+    @endforeach
 @endif
 
 <!-- Table Standings Section -->
